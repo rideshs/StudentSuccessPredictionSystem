@@ -4,25 +4,29 @@
 
 namespace StudentSuccessPrediction.Migrations
 {
-    public partial class AddSubidToAssignMark : Migration
+    public partial class AttendanceMarksUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Subject",
+                table: "AttendanceMarks");
+
             migrationBuilder.AddColumn<int>(
                 name: "SubjectId",
-                table: "AssignmentMarks",
+                table: "AttendanceMarks",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssignmentMarks_SubjectId",
-                table: "AssignmentMarks",
+                name: "IX_AttendanceMarks_SubjectId",
+                table: "AttendanceMarks",
                 column: "SubjectId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AssignmentMarks_Subjects_SubjectId",
-                table: "AssignmentMarks",
+                name: "FK_AttendanceMarks_Subjects_SubjectId",
+                table: "AttendanceMarks",
                 column: "SubjectId",
                 principalTable: "Subjects",
                 principalColumn: "Id",
@@ -32,16 +36,23 @@ namespace StudentSuccessPrediction.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AssignmentMarks_Subjects_SubjectId",
-                table: "AssignmentMarks");
+                name: "FK_AttendanceMarks_Subjects_SubjectId",
+                table: "AttendanceMarks");
 
             migrationBuilder.DropIndex(
-                name: "IX_AssignmentMarks_SubjectId",
-                table: "AssignmentMarks");
+                name: "IX_AttendanceMarks_SubjectId",
+                table: "AttendanceMarks");
 
             migrationBuilder.DropColumn(
                 name: "SubjectId",
-                table: "AssignmentMarks");
+                table: "AttendanceMarks");
+
+            migrationBuilder.AddColumn<string>(
+                name: "Subject",
+                table: "AttendanceMarks",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
     }
 }

@@ -16,7 +16,6 @@ namespace StudentSuccessPrediction.Models
 
         public ICollection<Student>? Students { get; set; }
 
-        public ICollection<PreboardSubjectMark> PreboardSubjectMarks { get; set; }
 
     }
 }

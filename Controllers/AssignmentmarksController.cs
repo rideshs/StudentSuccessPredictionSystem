@@ -21,17 +21,16 @@ namespace StudentSuccessPrediction.Controllers
         public async Task<IActionResult> Index()
         {
             var assignmentMarks = await _context.AssignmentMarks
+                .Include(a => a.Student)
                 .Include(a => a.Subject)
                 .Select(a => new AssignmentMarkViewModel
                 {
                     Id = a.Id,
-                    AssignmentMarkobtained = a.AssignmentMarkobtained,
+                    StudentId = a.StudentId,
+                    StudentName = a.Student.Name, // populate the student name property
                     SubjectId = a.SubjectId,
-                    Subjects = _context.Subjects.Select(s => new SelectListItem
-                    {
-                        Value = s.Id.ToString(),
-                        Text = s.SubjectName
-                    }).ToList()
+                    SubjectName = a.Subject.SubjectName, // populate the subject name property
+                    AssignmentMarkobtained = a.AssignmentMarkobtained
                 })
                 .ToListAsync();
 

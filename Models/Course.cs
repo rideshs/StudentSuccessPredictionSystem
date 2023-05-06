@@ -12,7 +12,7 @@ namespace StudentSuccessPrediction.Models
 
         // Navigation properties
         public ICollection<Subject>? Subjects { get; set; }
-        public ICollection<Student> Students { get; set; }
+        public ICollection<Student> ?Students { get; set; }
 
 
         // Navigation properties

@@ -1,0 +1,32 @@
+﻿@model StudentSuccessPrediction.Models.PreboardMarkViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="container">
+    <h1 class="text-center mb-4">Delete Preboard Mark</h1>
+
+    <div class="card border-danger mb-3">
+        <div class="card-header">
+            <h4>Confirm Deletion</h4>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <strong>Student:</strong> @Model.StudentName<br />
+                <strong>Subject:</strong> @Model.SubjectName<br />
+                <strong>Mark Obtained:</strong> @Model.MarkObtained<br />
+            </p>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Delete" class="btn btn-danger mr-2" />
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,49 +1,37 @@
 ﻿@model StudentSuccessPrediction.Models.PreboardMarkViewModel
 
-<h1>Edit Preboard Mark</h1>
+@{
+    ViewData["Title"] = "Edit";
+}
 
-<form asp-action="Edit">
-    <input type="hidden" asp-for="StudentId" />
-    <div class="form-group">
-        <label asp-for="StudentName" class="control-label"></label>
-        <input asp-for="StudentName" class="form-control" />
-        <span asp-validation-for="StudentName" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Subject Name</th>
-                    <th>Marks Obtained</
-                    <th>Subject Name</th>
-                    <th>Marks Obtained</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var subject in Model.Subjects)
-                {
-                    <tr>
-                        <td>
-                            <input type="hidden" asp-for="@subject.SubjectId" />
-                            @subject.SubjectName
-                        </td>
-                        <td>
-                            <input asp-for="@subject.MarkObtained" class="form-control" />
-                            <span asp-validation-for="@subject.MarkObtained" class="text-danger"></span>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </div>
-</form>
+<h1>Edit</h1>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    }
+<h4>Preboard Mark</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="StudentId" class="control-label"></label>
+                @Html.DropDownListFor(model => model.StudentId, Model.Students, "-- Select Student --", new { @class = "form-control" })
+                <span asp-validation-for="StudentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SubjectId" class="control-label"></label>
+                @Html.DropDownListFor(model => model.SubjectId, Model.Subjects, "-- Select Subject --", new { @class = "form-control" })
+                <span asp-validation-for="SubjectId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MarkObtained" class="control-label"></label>
+                <input asp-for="MarkObtained" class="form-control" />
+                <span asp-validation-for="MarkObtained" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" /> |
+                @Html.ActionLink("Back to List", "Index")
+            </div>
+        </form>
+    </div>
+</div>

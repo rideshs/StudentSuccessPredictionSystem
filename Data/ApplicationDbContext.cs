@@ -23,10 +23,9 @@ namespace StudentSuccessPrediction.Data
         public DbSet<AttendanceMark> AttendanceMarks { get; set; }
         public DbSet<AssignmentMark> AssignmentMarks { get; set; }
 
-        public DbSet<PreboardSubjectMark> PreboardSubjectMarks { get; set; }
 
 
-        public DbSet<PreboardMark> PreboardMarks { get; set; }
+        public DbSet<Preboard> Preboards { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -51,7 +50,15 @@ namespace StudentSuccessPrediction.Data
         .WithMany(s => s.AssignmentMarks)
         .HasForeignKey(a => a.StudentId);
 
+            //create a unique index on the StudentId and SubjectId columns of your PreboardMark table,
+            //which will prevent the same student from entering the same subject marks twice. 
+            modelBuilder.Entity<Preboard>()
+        .HasIndex(p => new { p.StudentId, p.SubjectId })
+        .IsUnique();
+
         }
+
+
 
 
 

@@ -12,8 +12,8 @@ using StudentSuccessPrediction.Data;
 namespace StudentSuccessPrediction.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230501193637_SelectGroupIdPkAdded")]
-    partial class SelectGroupIdPkAdded
+    [Migration("20230505055018_Newinitialwithallentity")]
+    partial class Newinitialwithallentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -255,9 +255,14 @@ namespace StudentSuccessPrediction.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("AssignmentMarks");
                 });
@@ -306,6 +311,33 @@ namespace StudentSuccessPrediction.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("StudentSuccessPrediction.Models.Preboard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("MarkObtained")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("StudentId", "SubjectId")
+                        .IsUnique();
+
+                    b.ToTable("Preboards");
                 });
 
             modelBuilder.Entity("StudentSuccessPrediction.Models.Semester", b =>
@@ -457,7 +489,15 @@ namespace StudentSuccessPrediction.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StudentSuccessPrediction.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Student");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("StudentSuccessPrediction.Models.AttendanceMark", b =>
@@ -469,6 +509,25 @@ namespace StudentSuccessPrediction.Migrations
                         .IsRequired();
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentSuccessPrediction.Models.Preboard", b =>
+                {
+                    b.HasOne("StudentSuccessPrediction.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudentSuccessPrediction.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("StudentSuccessPrediction.Models.Student", b =>

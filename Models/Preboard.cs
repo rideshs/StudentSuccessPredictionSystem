@@ -2,20 +2,23 @@
 
 namespace StudentSuccessPrediction.Models
 {
-    public class PreboardMark
+    public class Preboard
     {
         [Key]
         public int Id { get; set; }
 
-        public int TotalMark { get; set; }
 
         // Foreign key property
         public int StudentId { get; set; }
 
         // Navigation property
-        public Student Student { get; set; }
+        public virtual Student Student { get; set; }
+        // Foreign key property
+        public int SubjectId { get; set; }
 
         // Navigation property
-        public ICollection<PreboardSubjectMark> PreboardSubjectMarks { get; set; }
+        public virtual Subject Subject { get; set; }
+
+        public int MarkObtained { get; set; }
     }
 }

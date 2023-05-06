@@ -22,8 +22,21 @@ namespace StudentSuccessPrediction.Controllers
         // GET: AttendanceMarks
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.AttendanceMarks.Include(a => a.Student);
-            return View(await applicationDbContext.ToListAsync());
+            var attendanceMarks = await _context.AttendanceMarks
+                .Include(a => a.Student)
+                .Include(a => a.Subject)
+                .Select(a => new AttendanceViewModel
+                {
+                    Id = a.Id,
+                    StudentId = a.StudentId,
+                    StudentName = a.Student.Name, // populate the student name property
+                    SubjectId = a.SubjectId,
+                    SubjectName = a.Subject.SubjectName, // populate the subject name property
+                    AttendanceMarkobtained = a.AttendanceMarkobtained
+                })
+                .ToListAsync();
+
+            return View(attendanceMarks);
         }
 
         // GET: AttendanceMarks/Details/5
@@ -45,29 +58,92 @@ namespace StudentSuccessPrediction.Controllers
             return View(attendanceMark);
         }
 
+
+
         // GET: AttendanceMarks/Create
         public IActionResult Create()
         {
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "Name");
-            return View();
+            var model = new AttendanceViewModel();
+
+            // Get a list of all students from the database
+            var students = _context.Students
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.Name
+                })
+                .ToList();
+            model.Students = students;
+
+            // Get a list of all subjects from the database
+            var subjects = _context.Subjects
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.SubjectName
+                })
+                .ToList();
+            model.Subjects = subjects;
+
+            return View(model);
         }
 
-        // POST: AttendanceMarks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AttendanceMarkobtained,StudentId,Subject")] AttendanceMark attendanceMark)
+        public async Task<IActionResult> Create(AttendanceViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(attendanceMark);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Check if an attendance mark already exists for this student and subject
+                var existingAttendanceMark = await _context.AttendanceMarks
+                    .FirstOrDefaultAsync(a => a.StudentId == model.StudentId && a.SubjectId == model.SubjectId);
+
+                if (existingAttendanceMark == null)
+                {
+                    // Create a new attendance mark
+                    var attendanceMark = new AttendanceMark
+                    {
+                        StudentId = model.StudentId,
+                        SubjectId = model.SubjectId,
+                        AttendanceMarkobtained = model.AttendanceMarkobtained
+                    };
+
+                    _context.AttendanceMarks.Add(attendanceMark);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "An attendance mark already exists for this student and subject.");
+                }
             }
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "Name", attendanceMark.StudentId);
-            return View(attendanceMark);
+
+            // Repopulate the dropdown lists
+            var students = await _context.Students
+                .OrderBy(s => s.Name)
+                
+                .ToListAsync();
+
+            var subjects = await _context.Subjects
+                .OrderBy(s => s.SubjectName)
+                .ToListAsync();
+
+            model.Students = students.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.Name
+            }).ToList();
+
+            model.Subjects = subjects.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.SubjectName
+            }).ToList();
+
+            return View(model);
         }
+
+
 
         // GET: AttendanceMarks/Edit/5
         public async Task<IActionResult> Edit(int? id)

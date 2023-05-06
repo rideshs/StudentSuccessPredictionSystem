@@ -1,4 +1,6 @@
-﻿namespace StudentSuccessPrediction.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace StudentSuccessPrediction.Models
 {
     public class AttendanceMark
     {
@@ -8,7 +10,11 @@
 
         // Navigation properties
         public int StudentId { get; set; }
-        public string Subject { get; set; }
         public virtual Student? Student { get; set; }
+
+        public int SubjectId { get; set; }
+        public virtual Subject? Subject { get; set; }
+
+       
     }
 }

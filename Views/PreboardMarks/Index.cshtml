@@ -1,52 +1,49 @@
-﻿@model StudentSuccessPrediction.Models.PreboardMarkViewModel
+﻿@model List<StudentSuccessPrediction.Models.PreboardMarkViewModel>
 
-<h1>Create Preboard Mark</h1>
+@{
+    ViewData["Title"] = "Preboard Marks";
+}
 
-<form asp-action="Create">
-   
-    <div class="form-group">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Subject Name</th>
-                    <th>Marks Obtained</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Subjects != null)
-                {
-                    @foreach (var subject in Model.Subjects)
-                    {
-                        <tr>
-                            <td>
-                                <input type="hidden" asp-for="Subjects[@subject.Index].SubjectId" />
-                                <input type="hidden" asp-for="Subjects[@subject.Index].SubjectName" />
-                                @subject.Name
-                            </td>
-                            <td>
-                                <input asp-for="Subjects[@subject.Index].MarkObtained" class="form-control" />
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="2">No subjects found</td>
-                    </tr>
-                }
+<h1>Preboard Marks</h1>
 
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Marks</a>
+</p>
 
-            </tbody>
-        </table>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Create</button>
-    </div>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    }
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Student Name
+            </th>
+            <th>
+                Subject Name
+            </th>
+            <th>
+                Mark Obtained
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StudentName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubjectName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MarkObtained)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
