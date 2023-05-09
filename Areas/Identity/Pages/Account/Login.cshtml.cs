@@ -15,18 +15,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using StudentSuccessPrediction.Models;
+using System.Net.Mail;
 
 namespace StudentSuccessPrediction.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
+        private readonly UserManager<ApplicationUser> _userManager;// new added
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+
         }
 
         /// <summary>
@@ -66,7 +70,8 @@ namespace StudentSuccessPrediction.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
+            [Display(Name = "Email / Username")]// new added  [Display(Name = "Email / Username")
+       
             public string Email { get; set; }
 
             /// <summary>
@@ -110,9 +115,29 @@ namespace StudentSuccessPrediction.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                // new added 
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var userName = Input.Email;
+                if (IsValidEmail(Input.Email))
+                {
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user != null)
+                    {
+                        userName = user.UserName;
+                    }
+                }
+                /*else
+                {
+                    // Handle the case where the user doesn't exist
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }*/
+
+
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -136,6 +161,21 @@ namespace StudentSuccessPrediction.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        //new added to check  if the entered data is a valid email id or not.
+        public bool IsValidEmail(string emailaddress)
+        {
+            try
+            {
+                MailAddress m = new MailAddress(emailaddress);
+
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }
