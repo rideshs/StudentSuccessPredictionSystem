@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StudentSuccessPrediction.Enums;
 using StudentSuccessPrediction.Models;
 
 namespace StudentSuccessPrediction.Controllers
@@ -30,11 +32,15 @@ namespace StudentSuccessPrediction.Controllers
             }
             return View(userRolesViewModel);
         }
+
+
         private async Task<List<string>> GetUserRoles(ApplicationUser user)
         {
             return new List<string>(await _userManager.GetRolesAsync(user));
         }
 
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
