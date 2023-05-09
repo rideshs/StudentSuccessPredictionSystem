@@ -4,8 +4,10 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.ConstrainedExecution;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -38,6 +40,10 @@ namespace StudentSuccessPrediction.Areas.Identity.Pages.Account.Manage
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
+
+
+        [TempData]
+        public string UserNameChangeLimitMessage { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -97,7 +103,11 @@ namespace StudentSuccessPrediction.Areas.Identity.Pages.Account.Manage
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
             }
+            //new added: 
+            UserNameChangeLimitMessage = $"You can change your username {user.UsernameChangeLimit} more time(s).";
+
 
             await LoadAsync(user);
             return Page();
@@ -162,7 +172,32 @@ namespace StudentSuccessPrediction.Areas.Identity.Pages.Account.Manage
             }
 
 
+            //new added: Setting a Limit to Change Username
+            //calculate the number of attempts left for a user to change his / her username.
 
+            if (user.UsernameChangeLimit > 0)
+            {
+                if (Input.Username != user.UserName)
+                {
+                    var userNameExists = await _userManager.FindByNameAsync(Input.Username);
+                    if (userNameExists != null)
+                    {
+                        StatusMessage = "User name already taken. Select a different username.";
+                        return RedirectToPage();
+                    }
+                    var setUserName = await _userManager.SetUserNameAsync(user, Input.Username);
+                    if (!setUserName.Succeeded)
+                    {
+                        StatusMessage = "Unexpected error when trying to set user name.";
+                        return RedirectToPage();
+                    }
+                    else
+                    {
+                        user.UsernameChangeLimit -= 1;
+                        await _userManager.UpdateAsync(user);
+                    }
+                }
+            }
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
