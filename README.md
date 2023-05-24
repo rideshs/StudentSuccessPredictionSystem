@@ -2,4 +2,4 @@
 
 ![Homepage](homepage.png) 
 
-![Prediction Page](prediction (2).png) 
+![Prediction Pages](prediction (2).png) 
