@@ -1,5 +1,5 @@
 # StudentSuccessPrediction
 
-![Homepage](Homepage.PNG) 
+![Homepage](homepage.png) 
 
-![Prediction Page](Prediction (2).PNG) 
+![Prediction Page](prediction (2).png) 
